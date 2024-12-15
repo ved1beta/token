@@ -1,5 +1,5 @@
 # Byte Pair Encoding (BPE) Tokenizer
-
+![Tokenizer](Screenshot from 2024-12-15 17-00-37.png)
 ## Project Overview
 
 This is a web application that demonstrates Byte Pair Encoding (BPE) tokenization, a powerful technique used in natural language processing and machine learning, particularly in modern language models like GPT.
