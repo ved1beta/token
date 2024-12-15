@@ -1,4 +1,5 @@
 # Byte Pair Encoding (BPE) Tokenizer
+![Alt text describing the image](/main.png)
 
 ## Project Overview
 
