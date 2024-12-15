@@ -6,6 +6,7 @@
     <title>Byte Pair Encoding Tokenizer</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
             --bg-primary: #121212;
@@ -144,6 +145,27 @@
             color: var(--bg-primary);
         }
 
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .social-icon {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-icon:hover {
+            color: var(--text-primary);
+        }
+
         @media (max-width: 768px) {
             .content {
                 flex-direction: column;
@@ -155,7 +177,7 @@
     <div class="container">
         <div class="header">
             <h1>Byte Pair Encoding Tokenizer</h1>
-            <p>Tokenize and Decode</p>
+            <p>Tokenize and Decode with Precision</p>
         </div>
 
         <div class="content">
@@ -184,6 +206,21 @@
 
         <div id="result"></div>
         <button onclick="copyResult()" class="copy-btn">Copy Result</button>
+
+        <div class="social-links">
+            <a href="https://github.com/ved1beta" target="_blank" class="social-icon">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://linkedin.com/in/vedantthote" target="_blank" class="social-icon">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="https://twitter.com/ant_vedaya" target="_blank" class="social-icon">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://vedant.tech" target="_blank" class="social-icon">
+                <i class="fas fa-globe"></i>
+            </a>
+        </div>
     </div>
 
     <script>
@@ -191,7 +228,7 @@
             const text = document.getElementById('tokenizeInput').value;
             try {
                 const response = await axios.post('/tokenize', { text });
-            
+                // Output only the tokens in a clean, single-line format
                 const tokens = response.data.encoded_tokens;
                 document.getElementById('result').textContent = JSON.stringify(tokens);
             } catch (error) {
@@ -206,10 +243,10 @@
             try {
                 let tokens;
                 if (inputType === 'tokens') {
-                   
+                    // Parse JSON input
                     tokens = JSON.parse(input);
                 } else {
-                  
+                    // Assume input is a string of tokens
                     tokens = input.split(',').map(token => token.trim());
                 }
 
@@ -224,19 +261,19 @@
             const resultElement = document.getElementById('result');
             const textToCopy = resultElement.textContent;
 
-       
+            // Create a temporary textarea to copy the text
             const tempTextArea = document.createElement('textarea');
             tempTextArea.value = textToCopy;
             document.body.appendChild(tempTextArea);
             
-
+            // Select and copy the text
             tempTextArea.select();
             document.execCommand('copy');
             
-
+            // Remove the temporary textarea
             document.body.removeChild(tempTextArea);
 
-  
+            // Optional: Provide visual feedback
             const copyBtn = event.target;
             copyBtn.textContent = 'Copied!';
             setTimeout(() => {
