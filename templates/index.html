@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte Pair Encoding Tokenizer</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-color: #4CAF50;
+            --accent-hover: #45a049;
+            --border-color: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background-color: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .content {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .section {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            flex: 1;
+        }
+
+        .section h2 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'Space Mono', monospace;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+            font-weight: 700;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        #result {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.5rem 1rem;
+            margin-top: 0.5rem;
+            border-radius: 6px;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-primary);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Byte Pair Encoding Tokenizer</h1>
+            <p>Tokenize and Decode</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>Tokenization</h2>
+                <textarea id="tokenizeInput" placeholder="Enter text to tokenize"></textarea>
+                <button onclick="tokenize()" class="btn">Tokenize</button>
+            </div>
+
+            <div class="section">
+                <h2>Decoding</h2>
+                <textarea id="decodeInput" placeholder="Enter tokens to decode"></textarea>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="inputType" value="tokens" checked>
+                        Tokens (JSON)
+                    </label>
+                    <label>
+                        <input type="radio" name="inputType" value="string">
+                        Token String
+                    </label>
+                </div>
+                <button onclick="decode()" class="btn">Decode</button>
+            </div>
+        </div>
+
+        <div id="result"></div>
+        <button onclick="copyResult()" class="copy-btn">Copy Result</button>
+    </div>
+
+    <script>
+        async function tokenize() {
+            const text = document.getElementById('tokenizeInput').value;
+            try {
+                const response = await axios.post('/tokenize', { text });
+            
+                const tokens = response.data.encoded_tokens;
+                document.getElementById('result').textContent = JSON.stringify(tokens);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.response.data.error;
+            }
+        }
+
+        async function decode() {
+            const inputType = document.querySelector('input[name="inputType"]:checked').value;
+            const input = document.getElementById('decodeInput').value;
+            
+            try {
+                let tokens;
+                if (inputType === 'tokens') {
+                   
+                    tokens = JSON.parse(input);
+                } else {
+                  
+                    tokens = input.split(',').map(token => token.trim());
+                }
+
+                const response = await axios.post('/decode', { tokens });
+                document.getElementById('result').textContent = response.data.decoded_text;
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.response.data.error;
+            }
+        }
+
+        function copyResult() {
+            const resultElement = document.getElementById('result');
+            const textToCopy = resultElement.textContent;
+
+       
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+            
+
+            tempTextArea.select();
+            document.execCommand('copy');
+            
+
+            document.body.removeChild(tempTextArea);
+
+  
+            const copyBtn = event.target;
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = 'Copy Result';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
